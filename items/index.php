@@ -14,7 +14,11 @@ if (!isset($_SESSION['user_id'])) {
 // Ambil username dari session
 $username = $_SESSION['username'];
 
-$data = mysqli_query($conn, "SELECT * FROM items");
+$data = mysqli_query($conn, "
+SELECT items.*, categories.name AS category_name
+FROM items
+LEFT JOIN categories ON items.category_id = categories.id
+");
 ?>
 
 <!DOCTYPE html>
@@ -45,6 +49,7 @@ $data = mysqli_query($conn, "SELECT * FROM items");
         <h3>📦 Inventaris toko olahraga</h3>
         <div>
             <a href="tambah.php" class="btn btn-success">+ Tambah</a>
+             <a href="../categories/index.php" class="btn btn-primary">Kategori</a>
             <a href="../auth/logout.php" class="btn btn-danger">Logout</a>
         </div>
     </div>
@@ -60,6 +65,7 @@ $data = mysqli_query($conn, "SELECT * FROM items");
                         <th>Nama</th>
                         <th>Stok</th>
                         <th>Harga</th>
+                        <th>Kategori</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -72,11 +78,16 @@ $data = mysqli_query($conn, "SELECT * FROM items");
                         <td><span class="badge bg-info"><?= $row['stock'] ?></span></td>
                         <td>Rp <?= number_format($row['price']) ?></td>
                         <td>
+                            <span class="badge bg-primary">
+                                <?= $row['category_name'] ? $row['category_name'] : '-' ?>
+                            </span>
+                        </td>
+                        <td>
                             <a href="edit.php?id=<?= $row['id'] ?>" class="btn btn-warning btn-sm">Edit</a>
                             <a href="hapus.php?id=<?= $row['id'] ?>" 
                                class="btn btn-danger btn-sm"
                                onclick="return confirm('Hapus data ini?')">Hapus</a>
-                        </td>
+                        </td>         
                     </tr>
                 <?php } ?>
                 </tbody>
